@@ -260,7 +260,7 @@ export class ManagerDashboardComponent implements OnInit {
   }
   getDate(o: OrderResponse): string {
     return o.createdAt
-      ? new Date(o.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      ? new Date((/Z|[+-]\d{2}:\d{2}$/.test(o.createdAt) ? o.createdAt : o.createdAt + 'Z')).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       : '—';
   }
   getAmount(amt: number | null): string { return '₹' + (amt ?? 0).toLocaleString(); }

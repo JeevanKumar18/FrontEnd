@@ -7,6 +7,7 @@ import { AuthService, Role } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { UserService } from '../../services/user.service';
 import { SettingsService } from '../../services/settings.service';
+import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 
 interface MenuItem {
   path: string;
@@ -34,7 +35,7 @@ interface Theme {
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, ChatbotComponent],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css'],
 })
@@ -59,7 +60,7 @@ export class MainLayoutComponent implements OnInit {
     { path: '/app/delivery',       label: 'Delivery Tracking',    icon: 'truck',            roles: ['USER','SUPPLIER'], section: 'ORDERS' },
 
     // Manager items
-    { path: '/app/orders',         label: 'Pending Approvals',    icon: 'check-circle',     roles: ['MANAGER'],         section: 'ORDERS' },
+    { path: '/app/orders',         label: 'All Orders',           icon: 'check-circle',     roles: ['MANAGER'],         section: 'ORDERS' },
     { path: '/app/inventory',      label: 'Inventory Overview',   icon: 'database',         roles: ['MANAGER'],         section: 'INVENTORY' },
 
     // Admin items

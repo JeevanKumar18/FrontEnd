@@ -65,7 +65,9 @@ export class NotificationsComponent implements OnInit {
     const type = this.typeMap[n.notificationType] ?? 'info';
     const title = n.notificationType.replace(/_/g, ' ')
       .split(' ').filter(w => w.length).map(w => w[0] + w.slice(1).toLowerCase()).join(' ');
-    const time = n.createdAt ? new Date(n.createdAt).toLocaleString() : '';
+    const raw = n.createdAt ?? '';
+    const normalized = raw && /Z|[+-]\d{2}:\d{2}$/.test(raw) ? raw : raw + 'Z';
+    const time = raw ? new Date(normalized).toLocaleString() : '';
     return { id: n.notificationId, type, rawType: n.notificationType, title, message: n.message, time, read: !!(n.read ?? n.isRead) };
   }
 

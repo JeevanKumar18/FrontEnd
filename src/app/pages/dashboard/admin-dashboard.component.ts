@@ -205,7 +205,10 @@ export class AdminDashboardComponent implements OnInit {
 
   formatDate(s: string): string {
     if (!s) return '—';
-    try { return new Date(s).toLocaleString(); } catch { return s; }
+    try {
+      const normalized = /Z|[+-]\d{2}:\d{2}$/.test(s) ? s : s + 'Z';
+      return new Date(normalized).toLocaleString();
+    } catch { return s; }
   }
 
   private flashSuccess(msg: string) { this.successMsg = msg; setTimeout(() => this.successMsg = '', 3500); }

@@ -73,9 +73,6 @@
       <button (click)="activeTab='stock'" class="tab-btn" [class.tab-active]="activeTab==='stock'">
         Stock Alerts
       </button>
-      <button (click)="activeTab='suppliers'" class="tab-btn" [class.tab-active]="activeTab==='suppliers'">
-        Supplier Performance
-      </button>
     </nav>
   </div>
 
@@ -270,11 +267,5 @@
     </div>
   }
 
-  <!-- Supplier Performance Tab -->
-  @if (activeTab === 'suppliers') {
-    <div class="supplier-placeholder">
-      <p>Supplier performance analytics require dedicated backend metrics endpoints, which aren't yet exposed by this server.</p>
-      <p class="placeholder-sub">Once available, this tab will show on-time delivery rates, approval ratios, and quality scores per supplier.</p>
-    </div>
-  }
+
 </div>

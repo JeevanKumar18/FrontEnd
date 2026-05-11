@@ -148,15 +148,29 @@ export class OrderDetailComponent implements OnInit {
         if (res.success) {
           this.order = res.data;
           const now = new Date().toISOString();
-          this.deliveryService.create({
-            orderId: this.order!.orderId,
-            status: 'SHIPPED',
-            shippedDate: now,
-          }).subscribe({
+          const existing = this.deliveries[this.deliveries.length - 1];
+          const obs$ = existing
+            ? this.deliveryService.update(existing.deliveryId, {
+                orderId: this.order!.orderId,
+                trackingNumber: existing.trackingNumber,
+                status: 'SHIPPED',
+                shippedDate: now,
+                deliveredDate: existing.deliveredDate,
+              })
+            : this.deliveryService.create({
+                orderId: this.order!.orderId,
+                status: 'SHIPPED',
+                shippedDate: now,
+              });
+          obs$.subscribe({
             next: (dRes) => {
               this.busy = false;
-              if (dRes.success && dRes.data) this.deliveries = [...this.deliveries, dRes.data];
-              this.flashSuccess('Order marked as Ordered. Delivery tracking auto-created with SHIPPED status.');
+              if (dRes.success && dRes.data) {
+                this.deliveries = existing
+                  ? this.deliveries.map(d => d.deliveryId === dRes.data.deliveryId ? dRes.data : d)
+                  : [...this.deliveries, dRes.data];
+              }
+              this.flashSuccess('Order marked as Ordered. Delivery tracking updated to SHIPPED.');
             },
             error: () => { this.busy = false; this.flashSuccess('Order marked as Ordered.'); }
           });
@@ -211,12 +225,13 @@ export class OrderDetailComponent implements OnInit {
           this.order = res.data;
           const latestDelivery = this.deliveries[this.deliveries.length - 1];
           if (latestDelivery) {
+            const now = new Date().toISOString();
             this.deliveryService.update(latestDelivery.deliveryId, {
               orderId: this.order!.orderId,
               trackingNumber: latestDelivery.trackingNumber,
               status: 'RETURNED',
               shippedDate: latestDelivery.shippedDate,
-              deliveredDate: latestDelivery.deliveredDate,
+              deliveredDate: now,
             }).subscribe({
               next: (dRes) => {
                 this.busy = false;
@@ -370,11 +385,17 @@ export class OrderDetailComponent implements OnInit {
 
   formatDate(s: string | null | undefined): string {
     if (!s) return '—';
-    try { return new Date(s).toLocaleString(); } catch { return s; }
+    try {
+      const normalized = /Z|[+-]\d{2}:\d{2}$/.test(s) ? s : s + 'Z';
+      return new Date(normalized).toLocaleString();
+    } catch { return s; }
   }
   formatDateOnly(s: string | null | undefined): string {
     if (!s) return '—';
-    try { return new Date(s).toLocaleDateString(); } catch { return s; }
+    try {
+      const normalized = /Z|[+-]\d{2}:\d{2}$/.test(s) ? s : s + 'Z';
+      return new Date(normalized).toLocaleDateString();
+    } catch { return s; }
   }
 
   get timeline(): { label: string; status: string; reached: boolean; current: boolean }[] {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OrderService, OrderResponse } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-order-history',
@@ -42,7 +43,19 @@ export class OrderHistoryComponent implements OnInit {
 
   orders: OrderResponse[] = [];
 
-  constructor(private orderService: OrderService) {}
+  constructor(private orderService: OrderService, private authService: AuthService) {}
+
+  get pageTitle(): string {
+    const role = this.authService.getCurrentUser()?.role;
+    if (role === 'MANAGER' || role === 'ADMIN') return 'All Orders';
+    return 'Order History';
+  }
+
+  get pageSubtitle(): string {
+    const role = this.authService.getCurrentUser()?.role;
+    if (role === 'MANAGER' || role === 'ADMIN') return 'View and manage all procurement orders';
+    return 'View and manage your procurement orders';
+  }
 
   ngOnInit() {
     this.orderService.getAll().subscribe({

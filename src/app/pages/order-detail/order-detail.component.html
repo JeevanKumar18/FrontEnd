@@ -166,19 +166,12 @@
     <div class="deliveries-card">
       <div class="deliveries-header">
         <h2 class="info-heading" style="margin-bottom: 0;">Delivery Tracking</h2>
-        @if (canManageDeliveries) {
-          <button (click)="openCreateDelivery()" class="btn-add-tracking">+ Add tracking</button>
-        }
       </div>
 
-      @if (!canManageDeliveries && role === 'MANAGER') {
-        <p style="font-size:0.82rem;color:#6b7280;margin-bottom:0.5rem;">
-          Delivery records are managed by Supplier or Admin only.
-        </p>
-      }
-
       @if (deliveries.length === 0) {
-        <p class="deliveries-empty">No delivery records yet.</p>
+        <p class="deliveries-empty">
+          No delivery record yet. It will be created automatically when the order is marked as Ordered.
+        </p>
       } @else {
         <table class="deliveries-table">
           <thead>
@@ -187,7 +180,6 @@
               <th>Status</th>
               <th>Shipped</th>
               <th>Delivered</th>
-              @if (canManageDeliveries) { <th class="th-right">Actions</th> }
             </tr>
           </thead>
           <tbody>
@@ -196,56 +188,12 @@
                 <td class="td-tracking">{{ d.trackingNumber || 'TRK-' + d.deliveryId }}</td>
                 <td><span class="badge" [ngClass]="deliveryStatusColors[d.status || ''] || 'delivery-pending'">{{ d.status || 'PENDING' }}</span></td>
                 <td class="td-shipped">{{ formatDate(d.shippedDate) }}</td>
-                <td class="td-delivered">{{ formatDate(d.deliveredDate) }}</td>
-                @if (canManageDeliveries) {
-                  <td class="td-del-actions">
-                    <button (click)="openEditDelivery(d)" class="btn-edit-delivery">Edit</button>
-                    <button (click)="deleteDelivery(d)" class="btn-delete-delivery">Delete</button>
-                  </td>
-                }
+                <td class="td-delivered">{{ formatDate(d.deliveredDate) }}<span *ngIf="d.status === 'RETURNED'" style="font-size:0.75rem;color:#92400e;display:block;">Returned</span></td>
               </tr>
             }
           </tbody>
         </table>
       }
-    </div>
-  }
-
-  <!-- Delivery Modal -->
-  @if (showDeliveryModal) {
-    <div class="modal-overlay" (click)="closeDeliveryModal()">
-      <div class="modal-container" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3 class="modal-title">{{ editingDelivery ? 'Edit' : 'Add' }} Delivery Tracking</h3>
-          <button (click)="closeDeliveryModal()" class="modal-close-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="modal-close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="modal-fields">
-            <div class="form-group">
-              <label class="form-label">Tracking Number</label>
-              <input type="text" [(ngModel)]="deliveryForm.trackingNumber" placeholder="Optional" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Status</label>
-              <select [(ngModel)]="deliveryForm.status" class="form-input">
-                @for (s of deliveryStatuses; track s) { <option [value]="s">{{ s }}</option> }
-              </select>
-              <p class="modal-hint">
-                SHIPPED/IN_TRANSIT/OUT_FOR_DELIVERY auto-stamps shipped date.
-                DELIVERED auto-stamps delivered date and advances the order to RECEIVED if it was ORDERED.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button (click)="saveDelivery()" [disabled]="busy" class="btn-modal-save">
-            {{ busy ? 'Saving...' : 'Save' }}
-          </button>
-          <button (click)="closeDeliveryModal()" class="btn-modal-cancel">Cancel</button>
-        </div>
-      </div>
     </div>
   }
 </div>

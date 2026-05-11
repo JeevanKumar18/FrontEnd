@@ -30,7 +30,9 @@ export class LoginComponent {
     const e: Record<string, string> = {};
     if (this.mode === 'register') {
       if (!this.formData.firstName) e['firstName'] = 'First name is required';
-      if (!this.formData.lastName)  e['lastName']  = 'Last name is required';
+      else if (!/^[A-Za-z]+$/.test(this.formData.firstName)) e['firstName'] = 'First name must contain letters only';
+      if (!this.formData.lastName) e['lastName'] = 'Last name is required';
+      else if (!/^[A-Za-z]+$/.test(this.formData.lastName)) e['lastName'] = 'Last name must contain letters only';
     }
     if (this.mode !== 'email-login') {
       if (!this.formData.email) e['email'] = 'Email is required';
@@ -103,7 +105,7 @@ export class LoginComponent {
     this.authService.loginByEmail(this.formData.email).subscribe({
       next: (res) => {
         this.isLoading = false;
-        if (res.success) this.router.navigate(['/app/set-password']);
+        if (res.success) this.router.navigate(['/set-password']);
         else this.errors['general'] = res.message || 'Login failed';
       },
       error: (err) => {

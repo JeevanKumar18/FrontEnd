@@ -72,7 +72,7 @@
                   </div>
                 </td>
                 <td>{{ p.categoryName || '—' }}</td>
-                <td class="td-price">${{ (p.price ?? 0).toFixed(2) }}</td>
+                <td class="td-price">₹{{ (p.price ?? 0).toFixed(2) }}</td>
                 <td>{{ p.stockQuantity ?? 0 }}</td>
                 <td>
                   <span class="table-stock-badge"
@@ -111,6 +111,13 @@
         <div class="modal-body-scroll">
           @if (errorMsg) {
             <div class="modal-error">{{ errorMsg }}</div>
+          }
+
+          @if (!editingId) {
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:0.6rem 0.9rem;margin-bottom:0.75rem;font-size:0.82rem;color:#1e40af;">
+              Fill in the details below to list your product. Fields marked <strong>*</strong> are required.
+              Your product will be visible to buyers once saved.
+            </div>
           }
 
           <div class="modal-form-fields">

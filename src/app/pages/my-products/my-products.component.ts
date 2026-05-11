@@ -132,7 +132,9 @@ export class MyProductsComponent implements OnInit {
         this.busy = false;
         if (res.success && res.data) {
           if (this.editingId) {
-            this.products = this.products.map(p => p.productId === res.data.productId ? res.data : p);
+            // Prefer form imageUrl in case the backend strips it from the response
+            const updated = { ...res.data, imageUrl: this.form.imageUrl || res.data.imageUrl };
+            this.products = this.products.map(p => p.productId === updated.productId ? updated : p);
             this.flashSuccess('Product updated.');
           } else {
             this.products = [res.data, ...this.products];

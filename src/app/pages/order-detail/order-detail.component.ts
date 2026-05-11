@@ -139,9 +139,99 @@ export class OrderDetailComponent implements OnInit {
   approve() { this.orderService.approve(this.order!.orderId).subscribe({ next: res => { this.order = res.data; this.flashSuccess('Order approved.'); }, error: err => { this.errorMsg = err?.error?.message || 'Failed to approve.'; } }); }
   reject()  { if (!confirm('Reject this order?')) return; this.orderService.reject(this.order!.orderId).subscribe({ next: res => { this.order = res.data; this.flashSuccess('Order rejected.'); }, error: err => { this.errorMsg = err?.error?.message || 'Failed to reject.'; } }); }
 
-  markOrdered()  { this.changeStatus('ORDERED'); }
-  markReceived() { this.changeStatus('RECEIVED', 'Mark this order as received?'); }
-  markReturned() { this.changeStatus('RETURNED', 'Mark this order as returned?'); }
+  markOrdered() {
+    if (!this.order) return;
+    this.busy = true;
+    this.errorMsg = '';
+    this.orderService.updateStatus(this.order.orderId, 'ORDERED').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order = res.data;
+          const now = new Date().toISOString();
+          this.deliveryService.create({
+            orderId: this.order!.orderId,
+            status: 'SHIPPED',
+            shippedDate: now,
+          }).subscribe({
+            next: (dRes) => {
+              this.busy = false;
+              if (dRes.success && dRes.data) this.deliveries = [...this.deliveries, dRes.data];
+              this.flashSuccess('Order marked as Ordered. Delivery tracking auto-created with SHIPPED status.');
+            },
+            error: () => { this.busy = false; this.flashSuccess('Order marked as Ordered.'); }
+          });
+        } else { this.busy = false; }
+      },
+      error: (err) => { this.busy = false; this.errorMsg = err?.error?.message || 'Failed to update status.'; }
+    });
+  }
+
+  markReceived() {
+    if (!this.order) return;
+    if (!confirm('Mark this order as delivered?')) return;
+    this.busy = true;
+    this.errorMsg = '';
+    this.orderService.updateStatus(this.order.orderId, 'RECEIVED').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order = res.data;
+          const latestDelivery = this.deliveries[this.deliveries.length - 1];
+          if (latestDelivery) {
+            const now = new Date().toISOString();
+            this.deliveryService.update(latestDelivery.deliveryId, {
+              orderId: this.order!.orderId,
+              trackingNumber: latestDelivery.trackingNumber,
+              status: 'DELIVERED',
+              shippedDate: latestDelivery.shippedDate,
+              deliveredDate: now,
+            }).subscribe({
+              next: (dRes) => {
+                this.busy = false;
+                if (dRes.success && dRes.data)
+                  this.deliveries = this.deliveries.map(d => d.deliveryId === dRes.data.deliveryId ? dRes.data : d);
+                this.flashSuccess('Order marked as Delivered. Delivery tracking updated to DELIVERED.');
+              },
+              error: () => { this.busy = false; this.flashSuccess('Order marked as Delivered.'); }
+            });
+          } else { this.busy = false; this.flashSuccess('Order marked as Delivered.'); }
+        } else { this.busy = false; }
+      },
+      error: (err) => { this.busy = false; this.errorMsg = err?.error?.message || 'Failed to update status.'; }
+    });
+  }
+
+  markReturned() {
+    if (!this.order) return;
+    if (!confirm('Mark this order as returned?')) return;
+    this.busy = true;
+    this.errorMsg = '';
+    this.orderService.updateStatus(this.order.orderId, 'RETURNED').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order = res.data;
+          const latestDelivery = this.deliveries[this.deliveries.length - 1];
+          if (latestDelivery) {
+            this.deliveryService.update(latestDelivery.deliveryId, {
+              orderId: this.order!.orderId,
+              trackingNumber: latestDelivery.trackingNumber,
+              status: 'RETURNED',
+              shippedDate: latestDelivery.shippedDate,
+              deliveredDate: latestDelivery.deliveredDate,
+            }).subscribe({
+              next: (dRes) => {
+                this.busy = false;
+                if (dRes.success && dRes.data)
+                  this.deliveries = this.deliveries.map(d => d.deliveryId === dRes.data.deliveryId ? dRes.data : d);
+                this.flashSuccess('Order marked as Returned. Delivery tracking updated to RETURNED.');
+              },
+              error: () => { this.busy = false; this.flashSuccess('Order marked as Returned.'); }
+            });
+          } else { this.busy = false; this.flashSuccess('Order marked as Returned.'); }
+        } else { this.busy = false; }
+      },
+      error: (err) => { this.busy = false; this.errorMsg = err?.error?.message || 'Failed to update status.'; }
+    });
+  }
 
   requestCancel() {
     if (!this.order) return;
@@ -247,9 +337,11 @@ export class OrderDetailComponent implements OnInit {
           } else {
             this.deliveries = [...this.deliveries, res.data];
           }
-          if (this.deliveryForm.status === 'DELIVERED' && this.order!.status === 'ORDERED') {
-            this.changeStatus('RECEIVED');
-          }
+          // Reload the order so the order timeline reflects the latest delivery state
+          this.orderService.getById(this.order!.orderId).subscribe({
+            next: (r) => { if (r.success) this.order = r.data; },
+            error: () => {}
+          });
           this.flashSuccess('Delivery saved.');
           this.closeDeliveryModal();
         }

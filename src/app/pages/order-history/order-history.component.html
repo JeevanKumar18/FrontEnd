@@ -67,7 +67,7 @@
                 <td class="td-order-id">ORD-{{ order.orderId }}</td>
                 <td class="td-title">{{ order.orderTitle }}</td>
                 <td class="td-products">{{ getOrderProducts(order) }}</td>
-                <td class="td-amount">${{ (order.totalAmount ?? 0).toFixed(2) }}</td>
+                <td class="td-amount">₹{{ (order.totalAmount ?? 0).toFixed(2) }}</td>
                 <td class="td-date">{{ getOrderDate(order) }}</td>
                 <td class="td-status">
                   <span class="badge" [ngClass]="statusColors[order.status] || 'status-draft'">{{ order.status }}</span>

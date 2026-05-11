@@ -107,3 +107,9 @@
 }
 .pw-toggle-btn:hover { color: #4b5563; }
 .pw-toggle-icon { width: 1.25rem; height: 1.25rem; }
+
+/* Hide the browser's native password reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear { display: none; }
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button { visibility: hidden; }

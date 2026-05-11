@@ -110,7 +110,8 @@ export class ProductDetailComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         if (res.success) {
-          this.product = res.data;
+          // Prefer the imageUrl from the local form in case the backend strips it from the response
+          this.product = { ...res.data, imageUrl: this.editForm.imageUrl || res.data.imageUrl };
           this.isEditing = false;
           this.successMsg = 'Product updated.';
           setTimeout(() => (this.successMsg = ''), 3000);

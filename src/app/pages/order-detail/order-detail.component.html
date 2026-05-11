@@ -26,7 +26,7 @@
         </div>
         <div class="order-header-right">
           <span class="badge" [ngClass]="statusColors[order.status] || 'status-draft'">{{ order.status }}</span>
-          <p class="order-total">${{ totalAmount.toFixed(2) }}</p>
+          <p class="order-total">₹{{ totalAmount.toFixed(2) }}</p>
         </div>
       </div>
 
@@ -45,7 +45,7 @@
           <button (click)="markOrdered()" [disabled]="busy" class="btn-mark-ordered">Mark as Ordered</button>
         }
         @if (canMarkReceived) {
-          <button (click)="markReceived()" [disabled]="busy" class="btn-mark-received">Mark as Received</button>
+          <button (click)="markReceived()" [disabled]="busy" class="btn-mark-received">Mark as Delivered</button>
         }
         @if (canMarkReturned) {
           <button (click)="markReturned()" [disabled]="busy" class="btn-mark-returned">Mark as Returned</button>
@@ -146,15 +146,15 @@
                 <tr>
                   <td>{{ item.productName }}</td>
                   <td class="td-right">{{ item.quantity }}</td>
-                  <td class="td-right">${{ (item.price ?? 0).toFixed(2) }}</td>
-                  <td class="td-right" style="font-weight: 500;">${{ ((item.price ?? 0) * item.quantity).toFixed(2) }}</td>
+                  <td class="td-right">₹{{ (item.price ?? 0).toFixed(2) }}</td>
+                  <td class="td-right" style="font-weight: 500;">₹{{ ((item.price ?? 0) * item.quantity).toFixed(2) }}</td>
                 </tr>
               }
             </tbody>
             <tfoot>
               <tr>
                 <td colspan="3" class="td-foot-label">Total</td>
-                <td class="td-foot-total">${{ totalAmount.toFixed(2) }}</td>
+                <td class="td-foot-total">₹{{ totalAmount.toFixed(2) }}</td>
               </tr>
             </tfoot>
           </table>

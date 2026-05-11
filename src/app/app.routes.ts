@@ -15,6 +15,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'set-password',
+    loadComponent: () =>
+      import('./pages/set-password/set-password.component').then(
+        (m) => m.SetPasswordComponent
+      ),
+  },
+  {
     path: 'app',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -116,13 +123,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
             (m) => m.SettingsComponent
-          ),
-      },
-      {
-        path: 'set-password',
-        loadComponent: () =>
-          import('./pages/set-password/set-password.component').then(
-            (m) => m.SetPasswordComponent
           ),
       },
     ],

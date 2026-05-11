@@ -54,7 +54,7 @@ export class MainLayoutComponent implements OnInit {
     // Supplier / user shared
     { path: '/app/products',       label: 'Product Catalog',      icon: 'package',          roles: ['USER','SUPPLIER'], section: 'MAIN' },
     { path: '/app/my-products',    label: 'My Products',          icon: 'package',          roles: ['SUPPLIER'],        section: 'MAIN' },
-    { path: '/app/create-order',   label: 'Create Order',         icon: 'shopping-cart',    roles: ['USER','SUPPLIER'], section: 'MAIN' },
+    { path: '/app/create-order',   label: 'Create Order',         icon: 'shopping-cart',    roles: ['USER'], section: 'MAIN' },
     { path: '/app/orders',         label: 'Order History',        icon: 'history',          roles: ['USER','SUPPLIER'], section: 'ORDERS' },
     { path: '/app/delivery',       label: 'Delivery Tracking',    icon: 'truck',            roles: ['USER','SUPPLIER'], section: 'ORDERS' },
 
@@ -102,7 +102,10 @@ export class MainLayoutComponent implements OnInit {
   ) {
     router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe((e: any) => { this.currentPath = e.urlAfterRedirects; });
+      .subscribe((e: any) => {
+        this.currentPath = e.urlAfterRedirects;
+        this.loadUnreadCount();
+      });
     this.currentPath = router.url;
   }
 

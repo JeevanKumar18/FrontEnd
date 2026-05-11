@@ -87,7 +87,6 @@ export class CreateOrderComponent implements OnInit {
     const e: Record<string, string> = {};
     if (step === 0) {
       if (!this.formData.orderTitle) e['orderTitle'] = 'Order title is required';
-      if (!this.formData.supplierId) e['supplierId'] = 'Supplier is required';
       if (!this.formData.department) e['department'] = 'Department is required';
       if (!this.formData.paymentMethod) e['paymentMethod'] = 'Payment method is required';
       if (!this.formData.budgetCode) e['budgetCode'] = 'Budget code is required';
@@ -138,6 +137,12 @@ export class CreateOrderComponent implements OnInit {
     if (!this.validateStep(this.currentStep)) return;
     this.serverValidating = true;
     this.errors = {};
+
+    // Auto-derive supplierId from the first selected product
+    if (!this.formData.supplierId && this.formData.selectedProducts.length > 0) {
+      const firstProduct = this.getProduct(this.formData.selectedProducts[0]);
+      if (firstProduct?.supplierId) this.formData.supplierId = firstProduct.supplierId;
+    }
 
     const items = this.formData.selectedProducts.map(id => {
       const product = this.products.find(p => p.productId === id);

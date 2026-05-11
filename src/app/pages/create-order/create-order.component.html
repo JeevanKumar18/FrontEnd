@@ -56,15 +56,6 @@
 
         <div class="form-grid-2">
           <div class="form-group">
-            <label class="form-label">Supplier *</label>
-            <select [(ngModel)]="formData.supplierId" class="form-input"
-              [class.is-invalid]="errors['supplierId']">
-              <option [ngValue]="0">Select supplier</option>
-              @for (s of suppliers; track s.id) { <option [ngValue]="s.id">{{ s.name }}</option> }
-            </select>
-            @if (errors['supplierId']) { <p class="form-error">{{ errors['supplierId'] }}</p> }
-          </div>
-          <div class="form-group">
             <label class="form-label">Department *</label>
             <input type="text" [(ngModel)]="formData.department" placeholder="e.g., IT, Finance"
               class="form-input"
@@ -144,7 +135,7 @@
                   <p class="product-category">{{ product.categoryName }}</p>
                 </div>
               </div>
-              <span class="product-price">${{ (product.price ?? 0).toFixed(2) }}</span>
+              <span class="product-price">₹{{ (product.price ?? 0).toFixed(2) }}</span>
             </div>
           }
         </div>
@@ -163,7 +154,7 @@
           <div class="quantity-row">
             <div class="quantity-row-left">
               <p class="product-name">{{ getProduct(id)?.productName }}</p>
-              <p class="product-unit-price">${{ getProduct(id)?.price?.toFixed(2) }} each</p>
+              <p class="product-unit-price">₹{{ getProduct(id)?.price?.toFixed(2) }} each</p>
             </div>
             <div class="quantity-row-right">
               <div>
@@ -174,7 +165,7 @@
                 @if (errors['qty_'+id]) { <p class="field-error-xs">{{ errors['qty_'+id] }}</p> }
               </div>
               <p class="line-total">
-                ${{ ((getProduct(id)?.price || 0) * (formData.quantities[id] || 0)).toFixed(2) }}
+                ₹{{ ((getProduct(id)?.price || 0) * (formData.quantities[id] || 0)).toFixed(2) }}
               </p>
             </div>
           </div>
@@ -182,7 +173,7 @@
         <div class="total-bar">
           <div style="text-align: right;">
             <p class="total-label">Total Amount</p>
-            <p class="total-amount">${{ calculateTotal().toFixed(2) }}</p>
+            <p class="total-amount">₹{{ calculateTotal().toFixed(2) }}</p>
           </div>
         </div>
         @if (errors['total']) {
@@ -297,12 +288,12 @@
           @for (id of formData.selectedProducts; track id) {
             <div class="review-product-row">
               <span>{{ getProduct(id)?.productName }} &times; {{ formData.quantities[id] || 0 }}</span>
-              <span class="review-product-total">${{ ((getProduct(id)?.price || 0) * (formData.quantities[id] || 0)).toFixed(2) }}</span>
+              <span class="review-product-total">₹{{ ((getProduct(id)?.price || 0) * (formData.quantities[id] || 0)).toFixed(2) }}</span>
             </div>
           }
           <div class="review-total-row">
             <span>Total</span>
-            <span class="review-total-amount">${{ calculateTotal().toFixed(2) }}</span>
+            <span class="review-total-amount">₹{{ calculateTotal().toFixed(2) }}</span>
           </div>
         </div>
 

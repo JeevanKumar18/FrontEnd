@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { DeliveryService, DeliveryResponse } from '../../services/delivery.service';
 
 interface TimelineStep { label: string; date: string; completed: boolean; current?: boolean; }
@@ -49,7 +50,11 @@ export class DeliveryTrackingComponent implements OnInit {
     ).length;
   }
 
-  constructor(private deliveryService: DeliveryService) {}
+  constructor(private deliveryService: DeliveryService, private router: Router) {}
+
+  viewOrderDetails(orderId: number) {
+    this.router.navigate(['/app/orders', orderId]);
+  }
 
   ngOnInit() {
     this.deliveryService.getAll().subscribe({

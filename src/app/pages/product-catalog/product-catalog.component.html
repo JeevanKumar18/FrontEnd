@@ -78,7 +78,7 @@
             <p class="product-category">{{ product.categoryName }}</p>
             <p class="product-description">{{ product.description }}</p>
             <div class="product-card-footer">
-              <span class="product-price">${{ (product.price ?? 0).toFixed(2) }}</span>
+              <span class="product-price">₹{{ (product.price ?? 0).toFixed(2) }}</span>
               <span class="product-view-link">View details →</span>
             </div>
           </div>
